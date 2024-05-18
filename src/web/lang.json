@@ -340,7 +340,7 @@
                 },
                 {
                     "token": "INV_RESET_MAX_VALUES",
-                    "en": "Inlude reset 'max' values",
+                    "en": "Include reset 'max' values",
                     "de": "Maximalwerte auch zur&uuml;cksetzen"
                 },
                 {
@@ -1837,6 +1837,11 @@
                     "token": "LAST_VALUE",
                     "en": "Last value",
                     "de": "Letzter Wert"
+                },
+                {
+                    "token": "YIELD_DAY",
+                    "en": "Yield day",
+                    "de": "Tagesertrag"
                 }
             ]
         }
