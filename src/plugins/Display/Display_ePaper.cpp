@@ -42,7 +42,7 @@ void DisplayEPaper::init(uint8_t type, uint8_t _CS, uint8_t _DC, uint8_t _RST, u
             _display->epd2.init(_SCK, _MOSI, 115200, true, 20, false);
     #endif
 #endif
-        _display->init(115200, true, 20, false);
+        _display->init(115200, true, 2, false);
         _display->setRotation(mDisplayRotation);
         _display->setFullWindow();
         _version = version;
@@ -60,6 +60,7 @@ void DisplayEPaper::fullRefresh() {
         return;
     mSecondCnt = 2;
     mRefreshState = RefreshStatus::BLACK;
+    _display->display(false);
 }
 
 //***************************************************************************
@@ -68,13 +69,14 @@ void DisplayEPaper::refreshLoop() {
         case RefreshStatus::LOGO:
             _display->fillScreen(GxEPD_BLACK);
             _display->drawBitmap(0, 0, logo, 200, 200, GxEPD_WHITE);
+            _display->display(false);
             mSecondCnt = 2;
             mNextRefreshState = RefreshStatus::PARTITIALS;
             mRefreshState = RefreshStatus::WAIT;
             break;
 
         case RefreshStatus::BLACK:
-            _display->fillScreen(GxEPD_BLACK);
+            //_display->fillScreen(GxEPD_BLACK);
             mNextRefreshState = RefreshStatus::WHITE;
             mRefreshState = RefreshStatus::WAIT;
             break;
@@ -82,13 +84,13 @@ void DisplayEPaper::refreshLoop() {
         case RefreshStatus::WHITE:
             if(0 != mSecondCnt)
                 break;
-            _display->fillScreen(GxEPD_WHITE);
+            //_display->fillScreen(GxEPD_WHITE);
             mNextRefreshState = RefreshStatus::PARTITIALS;
             mRefreshState = RefreshStatus::WAIT;
             break;
 
         case RefreshStatus::WAIT:
-            if(!_display->nextPage())
+            //if(!_display->nextPage())
                 mRefreshState = mNextRefreshState;
             break;
 
@@ -114,10 +116,11 @@ void DisplayEPaper::headlineIP() {
     _display->setFont(&FreeSans9pt7b);
     _display->setTextColor(GxEPD_WHITE);
 
-    _display->setPartialWindow(0, 0, _display->width(), mHeadFootPadding);
-    _display->fillScreen(GxEPD_BLACK);
+    //_display->setPartialWindow(0, 0, _display->width(), mHeadFootPadding);
+    _display->fillRect(0,0,_display->width(),mHeadFootPadding,GxEPD_BLACK);
+    //_display->fillScreen(GxEPD_BLACK);
 
-    do {
+    //do {
         if ((WiFi.isConnected() == true) && (WiFi.localIP() > 0)) {
             snprintf(_fmtText, EPAPER_MAX_TEXT_LEN, "%s", WiFi.localIP().toString().c_str());
         } else {
@@ -128,7 +131,8 @@ void DisplayEPaper::headlineIP() {
 
         _display->setCursor(x, (mHeadFootPadding - 2));
         _display->println(_fmtText);
-    } while (_display->nextPage());
+        //_display->display(false);
+    //} while (_display->nextPage());
 }
 //***************************************************************************
 void DisplayEPaper::lastUpdatePaged() {
@@ -138,9 +142,10 @@ void DisplayEPaper::lastUpdatePaged() {
     _display->setFont(&FreeSans9pt7b);
     _display->setTextColor(GxEPD_WHITE);
 
-    _display->setPartialWindow(0, _display->height() - mHeadFootPadding, _display->width(), mHeadFootPadding);
-    _display->fillScreen(GxEPD_BLACK);
-    do {
+    //_display->setPartialWindow(0, _display->height() - mHeadFootPadding, _display->width(), mHeadFootPadding);
+    //_display->fillScreen(GxEPD_BLACK);
+    _display->fillRect(0, _display->height() - mHeadFootPadding, _display->width(), _display->height(),GxEPD_BLACK);
+    //do {
         if (NULL != mUtcTs) {
             snprintf(_fmtText, EPAPER_MAX_TEXT_LEN, ah::getDateTimeStr(gTimezone.toLocal(*mUtcTs)).c_str());
 
@@ -150,7 +155,8 @@ void DisplayEPaper::lastUpdatePaged() {
             _display->setCursor(x, (_display->height() - 3));
             _display->println(_fmtText);
         }
-    } while (_display->nextPage());
+        //_display->display(false);
+    //} while (_display->nextPage());
 }
 //***************************************************************************
 void DisplayEPaper::versionFooter() {
@@ -160,9 +166,10 @@ void DisplayEPaper::versionFooter() {
     _display->setFont(&FreeSans9pt7b);
     _display->setTextColor(GxEPD_WHITE);
 
-    _display->setPartialWindow(0, _display->height() - mHeadFootPadding, _display->width(), mHeadFootPadding);
-    _display->fillScreen(GxEPD_BLACK);
-    do {
+    //_display->setPartialWindow(0, _display->height() - mHeadFootPadding, _display->width(), mHeadFootPadding);
+    //_display->fillScreen(GxEPD_BLACK);
+    _display->fillRect(0, _display->height() - mHeadFootPadding, _display->width(), _display->height(),GxEPD_BLACK);
+    //do {
         snprintf(_fmtText, EPAPER_MAX_TEXT_LEN, "%s: %s", STR_VERSION, _version);
 
         _display->getTextBounds(_fmtText, 0, 0, &tbx, &tby, &tbw, &tbh);
@@ -170,7 +177,8 @@ void DisplayEPaper::versionFooter() {
 
         _display->setCursor(x, (_display->height() - 3));
         _display->println(_fmtText);
-    } while (_display->nextPage());
+        //_display->display(false);
+    //} while (_display->nextPage());
 }
 //***************************************************************************
 void DisplayEPaper::offlineFooter() {
@@ -180,9 +188,10 @@ void DisplayEPaper::offlineFooter() {
     _display->setFont(&FreeSans9pt7b);
     _display->setTextColor(GxEPD_WHITE);
 
-    _display->setPartialWindow(0, _display->height() - mHeadFootPadding, _display->width(), mHeadFootPadding);
-    _display->fillScreen(GxEPD_BLACK);
-    do {
+    //_display->setPartialWindow(0, _display->height() - mHeadFootPadding, _display->width(), mHeadFootPadding);
+    //_display->fillScreen(GxEPD_BLACK);
+    _display->fillRect(0, _display->height() - mHeadFootPadding, _display->width(), _display->height(),GxEPD_BLACK);
+  //  do {
         if (NULL != mUtcTs) {
             snprintf(_fmtText, EPAPER_MAX_TEXT_LEN, STR_OFFLINE);
 
@@ -192,7 +201,8 @@ void DisplayEPaper::offlineFooter() {
             _display->setCursor(x, (_display->height() - 3));
             _display->println(_fmtText);
         }
-    } while (_display->nextPage());
+        //_display->display(false);
+//    } while (_display->nextPage());
 }
 //***************************************************************************
 void DisplayEPaper::actualPowerPaged(float totalPower, float totalYieldDay, float totalYieldTotal, uint8_t isprod) {
@@ -202,10 +212,11 @@ void DisplayEPaper::actualPowerPaged(float totalPower, float totalYieldDay, floa
     _display->setFont(&FreeSans24pt7b);
     _display->setTextColor(GxEPD_BLACK);
 
-    _display->setPartialWindow(0, mHeadFootPadding, _display->width(), _display->height() - (mHeadFootPadding * 2));
-    _display->fillScreen(GxEPD_WHITE);
+    //_display->setPartialWindow(0, mHeadFootPadding, _display->width(), _display->height() - (mHeadFootPadding * 2));
+    //_display->fillScreen(GxEPD_WHITE);
+    _display->fillRect(0, mHeadFootPadding, _display->width(), _display->height() - (mHeadFootPadding * 2),255);
 
-    do {
+    //do {
         // actual Production
         if (totalPower > 9999) {
             snprintf(_fmtText, EPAPER_MAX_TEXT_LEN, "%.1f kW", (totalPower / 1000));
@@ -277,7 +288,8 @@ void DisplayEPaper::actualPowerPaged(float totalPower, float totalYieldDay, floa
             _display->println(_fmtText);
         }
         yield();
-    } while (_display->nextPage());
+        //_display->display(false);
+    //} while (_display->nextPage());
 }
 //***************************************************************************
 void DisplayEPaper::loop(float totalPower, float totalYieldDay, float totalYieldTotal, uint8_t isprod) {
@@ -301,7 +313,9 @@ void DisplayEPaper::loop(float totalPower, float totalYieldDay, float totalYield
     } else if ((0 == totalPower) && (mEnPowerSave))
         offlineFooter();
 
-    _display->powerOff();
+    //_display->powerOff();
+    _display->display(true);
+    _display->hibernate();
 }
 
 //***************************************************************************
